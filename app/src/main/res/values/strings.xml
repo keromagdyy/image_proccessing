@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Image Proccessing</string>
+    <string name="app_name">Image Processing</string>
+    <string name="submit">Submit</string>
+    <string name="test_text">Test text Test text Test text Test text Test text Test text</string>
 </resources>
