@@ -4,7 +4,6 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs")
-
 }
 
 android {
@@ -53,11 +52,16 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    // Bottom Navigation Bar
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10")
-    // circle imageview
-    implementation("de.hdodenhof:circleimageview:3.1.0")
+    // room
+    implementation("androidx.room:room-common:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.6.2")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("android.arch.persistence.room:compiler:1.1.1")
 
+
+    // Navigation
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.6.2")
     implementation("com.google.dagger:hilt-android:2.49")
     kapt("com.google.dagger:hilt-compiler:2.49")
