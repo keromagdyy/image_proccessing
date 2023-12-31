@@ -1,4 +1,4 @@
-package com.kerolosmagdy.imageproccessing
+package com.kerolosmagdy.imageproccessing.shared
 
 import android.app.Application
 import android.content.Context

@@ -5,29 +5,29 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.kerolosmagdy.imageproccessing.R
-import com.kerolosmagdy.imageproccessing.data.model.ImagesModel
+import com.kerolosmagdy.imageproccessing.data.model.Result
 import com.kerolosmagdy.imageproccessing.databinding.LayoutImagesBinding
 
 class ImagesAdapter(
-    private val onClick: (image: ImagesModel, position: Int) -> Unit,
+    private val onClick: (image: Result, position: Int) -> Unit,
 ) : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
 
-    private var imagesList = ArrayList<ImagesModel>()
+    private var imagesList = ArrayList<Result>()
 
-    fun setData(image: List<ImagesModel>) {
+    fun setData(image: List<Result>) {
         imagesList = image as ArrayList
         notifyDataSetChanged()
     }
 
     inner class ViewHolder(private val binding: LayoutImagesBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: ImagesModel, position: Int) {
+        fun bind(item: Result, position: Int) {
 
-            binding.img.load(item.img) {
+            binding.img.load(item.resourceURI) {
                 crossfade(true)
                 placeholder(R.drawable.ic_logo)
             }
-            binding.txtTitle.text = truncateCaption(item.txt)
+            binding.txtTitle.text = truncateCaption(item.description)
 
             itemView.setOnClickListener {
                 onClick(item, position)

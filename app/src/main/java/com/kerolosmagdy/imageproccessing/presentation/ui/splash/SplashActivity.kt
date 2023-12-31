@@ -29,7 +29,7 @@ class SplashActivity : BaseActivity() {
         binding.imLogo.animation = logoAnim
 
         lifecycleScope.launch {
-            delay(4000)
+            delay(2000)
             startActivity(
                 Intent(
                     this@SplashActivity,

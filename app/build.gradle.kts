@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
     id("androidx.navigation.safeargs")
 }
@@ -58,13 +59,27 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("android.arch.persistence.room:compiler:1.1.1")
+//    annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    kapt("androidx.lifecycle:lifecycle-compiler:2.6.2")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     // Navigation
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10")
     implementation("androidx.lifecycle:lifecycle-common-java8:2.6.2")
-    implementation("com.google.dagger:hilt-android:2.49")
-    kapt("com.google.dagger:hilt-compiler:2.49")
+
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-compiler:2.50")
+
+    // For instrumentation tests
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.50")
+    kapt("com.google.dagger:hilt-compiler:2.50")
+
+    // For local unit tests
+    testImplementation("com.google.dagger:hilt-android-testing:2.50")
+    kapt("com.google.dagger:hilt-compiler:2.50")
 
     // retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -76,4 +91,13 @@ dependencies {
     // Coil image loader
     implementation("io.coil-kt:coil:2.5.0")
 
+    // viewModels
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+
+
+}
+
+kapt {
+    correctErrorTypes = true
 }
