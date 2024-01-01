@@ -20,6 +20,7 @@ A sample project using the Marvel API to show Marvel characters display with an 
 
 
 ## Video:
+Press for Google Drive icon to watch video for app features
 <p>
   <a href="https://drive.google.com/file/d/1R37Rm3ZkgtBfwJegP8wFD-4jOxZYeRoi/view?usp=sharing" target="_blank"><img alt="Google Play" src="https://img.shields.io/badge/Google%20Drive-4285F4.svg?style=for-the-badge&logo=Google-Drive&logoColor=white" /></a> 
 <p>
