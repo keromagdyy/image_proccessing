@@ -1,10 +1,12 @@
 package com.kerolosmagdy.imageproccessing.presentation.base
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Environment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
@@ -13,6 +15,8 @@ import java.io.FileOutputStream
 import java.util.*
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.kerolosmagdy.imageproccessing.R
 import com.kerolosmagdy.imageproccessing.data.db.pref.SharedPreferenceHelper
 import java.io.IOException
+import java.io.OutputStreamWriter
 import java.net.InetSocketAddress
 import java.util.Locale
 import java.util.UUID
@@ -198,56 +203,42 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    fun saveImagesToInternalStorage(imageUrls: List<String>) {
-        val picturesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-
+    fun saveImagesToInternalStorage(loadingView: View, imageUrls: List<String>) {
+        loadingView.visibility = View.VISIBLE
         for (imageUrl in imageUrls) {
-            val fileName = UUID.randomUUID().toString() + ".jpg" // Unique filename
-            val file = File(picturesDir, fileName)
+            // Download image
+            try {
+                val bitmap = Glide.with(this)
+                    .asBitmap()
+                    .load(imageUrl)
+                    .submit()
+                    .get() // Assuming network is available
 
-            Glide.with(baseContext)
-                .asBitmap()
-                .load(imageUrl)
-                .into(object : Target<Bitmap> {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        FileOutputStream(file).use { out ->
-                            resource.compress(Bitmap.CompressFormat.JPEG, 100, out)
-                        }
-                    }
+                saveImageToGallery(loadingView, bitmap)
 
-                    override fun onStart() {
-                    }
+            } catch (e: Exception) {
+                loadingView.visibility = View.GONE
+//                showToastSnack("The Image saved before", true)
+            }
+        }
+    }
 
-                    override fun onStop() {
-                    }
+    private fun saveImageToGallery(loadingView: View, bitmap: Bitmap) {
+        val imageUri = MediaStore.Images.Media.insertImage(
+            contentResolver,
+            bitmap,
+            "Image_${System.currentTimeMillis()}",
+            null
+        )
 
-                    override fun onDestroy() {
-                    }
+        if (imageUri != null) {
+            loadingView.visibility = View.GONE
+            showToastSnack("Image saved to gallery", false)
 
-                    override fun onLoadStarted(placeholder: Drawable?) {
-                    }
-
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        // Handle image download failure
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        // Handle image download failure
-                    }
-
-                    override fun getSize(cb: SizeReadyCallback) {
-                    }
-
-                    override fun removeCallback(cb: SizeReadyCallback) {
-                    }
-
-                    override fun setRequest(request: Request?) {
-                    }
-
-                    override fun getRequest(): Request? {
-                        return request
-                    }
-                })
+        } else {
+            loadingView.visibility = View.GONE
+            showToastSnack("The Image saved before", true)
+            Toast.makeText(this, "error", Toast.LENGTH_SHORT).show()
         }
     }
 

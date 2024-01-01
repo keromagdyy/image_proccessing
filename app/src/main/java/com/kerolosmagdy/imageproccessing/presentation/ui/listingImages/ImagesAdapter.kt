@@ -2,6 +2,7 @@ package com.kerolosmagdy.imageproccessing.presentation.ui.listingImages
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.kerolosmagdy.imageproccessing.R
@@ -25,10 +26,15 @@ class ImagesAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Result, position: Int) {
             val imgLink = "${item.thumbnail.path}.${item.thumbnail.extension}"
-            binding.img.load(fixLink(imgLink)) {
-                crossfade(true)
-                placeholder(R.drawable.ic_logo)
+            if(checkPathOrLink(imgLink)) {
+                binding.img.load(fixLink(imgLink)) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_logo)
+                }
+            } else {
+                binding.img.setImageURI(item.thumbnail.localPath!!.toUri())
             }
+
             if (checkNoCaption(item.description)) {
                 binding.txtTitle.text = truncateCaption(item.description)
                 binding.txtTitle.setBackgroundResource(R.drawable.have_caption_style)
@@ -66,7 +72,15 @@ class ImagesAdapter(
         }
 
         private fun checkNoCaption(txt: String): Boolean {
-            return !(txt == "" || txt == null)
+            return !(txt == "" || txt == null || txt == "No Caption")
+        }
+
+        fun checkPathOrLink(input: String): Boolean {
+            if (input.length >= 4) {
+                val firstFourCharacters = input.substring(0, 4)
+                return firstFourCharacters == "http"
+            }
+            return false
         }
 
         private fun fixLink(link: String?): String? {

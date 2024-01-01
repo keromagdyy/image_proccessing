@@ -102,6 +102,9 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     kapt("com.github.bumptech.glide:compiler:4.15.1")
 
+    //Pick Image From Camera And Gallery
+    implementation("com.github.dhaval2404:imagepicker:2.1")
+
 }
 
 kapt {

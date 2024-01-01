@@ -4,19 +4,21 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
+import androidx.core.net.toUri
 import androidx.palette.graphics.Palette
 import coil.load
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
 import com.kerolosmagdy.imageproccessing.R
 import com.kerolosmagdy.imageproccessing.data.model.CharactersModel
 import com.kerolosmagdy.imageproccessing.data.model.Result
 import com.kerolosmagdy.imageproccessing.databinding.ActivityImageDetailsBinding
 import com.kerolosmagdy.imageproccessing.presentation.base.BaseActivity
 import java.net.URL
+import com.bumptech.glide.request.target.Target
+import com.kerolosmagdy.imageproccessing.shared.convertImageUrlToBitmap
+import java.util.concurrent.ExecutionException
+
 
 class ImageDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityImageDetailsBinding
@@ -35,43 +37,45 @@ class ImageDetailsActivity : BaseActivity() {
         imageModel = intent.getSerializableExtra("image") as Result
 
         val imgLink = "${imageModel.thumbnail.path}.${imageModel.thumbnail.extension}"
-        binding.img.load(fixLink(imgLink)) {
-            crossfade(true)
-            placeholder(R.drawable.ic_logo)
+        if(checkPathOrLink(imgLink)) {
+            binding.img.load(fixLink(imgLink)) {
+                crossfade(true)
+                placeholder(R.drawable.ic_logo)
+            }
+        } else {
+            binding.img.setImageURI(imageModel.thumbnail.localPath!!.toUri())
+            binding.txtTitle.setTextColor(getColor(R.color.black))
         }
         binding.txtTitle.text = imageModel.description
 
-        loadImageBitmap(imgLink) { bitmap ->
-            if (bitmap != null) {
-                val url = URL(imgLink)
-                val inputStream = url.openStream()
-                val bitmap = BitmapFactory.decodeStream(inputStream)
-
-                val palette = Palette.from(bitmap).generate()
-                val dominantColor = palette.getDominantColor(getColor(R.color.white))
-                binding.root.setBackgroundColor(dominantColor)
-
-            } else {
-                binding.root.setBackgroundColor(getColor(R.color.white))
+        try {
+            convertImageUrlToBitmap(fixLink(imgLink)!!) { bitmap ->
+                // Use the bitmap here
+                if (bitmap != null) {
+                    val palette = Palette.from(bitmap!!).generate()
+                    val dominantColor = palette.getDominantColor(getColor(R.color.white))
+                    binding.root.setBackgroundColor(dominantColor)
+                    Log.d("vkjndjknvd", "init: ${0}")
+                } else {
+                    Log.d("vkjndjknvd", "init: ${1}")
+                }
             }
-        }
-        binding.root.setBackgroundColor(getColor(R.color.white))
+        } catch (e: Exception) {}
+
     }
 
     private fun onClick() {
-
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
     }
 
-    fun loadImageBitmap(imageUrl: String, callback: (Bitmap?) -> Unit) {
-        Glide.with(baseContext)
-            .asBitmap()
-            .load(imageUrl)
-            .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.ALL))
-            .into(object : SimpleTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    callback.invoke(resource)
-                }
-            })
+    fun checkPathOrLink(input: String): Boolean {
+        if (input.length >= 4) {
+            val firstFourCharacters = input.substring(0, 4)
+            return firstFourCharacters == "http"
+        }
+        return false
     }
 
     private fun fixLink(link: String?): String? {
