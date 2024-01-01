@@ -10,9 +10,11 @@ import com.kerolosmagdy.imageproccessing.databinding.LayoutImagesBinding
 
 class ImagesAdapter(
     private val onClick: (image: Result, position: Int) -> Unit,
+    private val onLongClick: (image: Result, position: Int) -> Unit,
 ) : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
 
     private var imagesList = ArrayList<Result>()
+    private var selectedItems = HashSet<Result>()
 
     fun setData(image: List<Result>) {
         imagesList = image as ArrayList
@@ -22,17 +24,59 @@ class ImagesAdapter(
     inner class ViewHolder(private val binding: LayoutImagesBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Result, position: Int) {
-
-            binding.img.load(item.resourceURI) {
+            val imgLink = "${item.thumbnail.path}.${item.thumbnail.extension}"
+            binding.img.load(fixLink(imgLink)) {
                 crossfade(true)
                 placeholder(R.drawable.ic_logo)
             }
-            binding.txtTitle.text = truncateCaption(item.description)
-
-            itemView.setOnClickListener {
-                onClick(item, position)
+            if (checkNoCaption(item.description)) {
+                binding.txtTitle.text = truncateCaption(item.description)
+                binding.txtTitle.setBackgroundResource(R.drawable.have_caption_style)
+            } else {
+                item.description = "No Caption"
+                binding.txtTitle.text = "No Caption"
+                binding.txtTitle.setBackgroundResource(R.drawable.no_caption_style)
             }
 
+            if (selectedItems.contains(item)) {
+                binding.root.setBackgroundResource(R.drawable.selected_item_background)
+            } else {
+                binding.root.setBackgroundResource(0) // Set your default background here
+            }
+
+
+            itemView.setOnClickListener {
+                if (selectedItems.isNotEmpty())
+                    toggleSelection(item)
+                else
+                    onClick(item, position)
+            }
+
+            itemView.setOnLongClickListener {
+                toggleSelection(item)
+                onLongClick(item, position)
+                return@setOnLongClickListener true
+            }
+
+        }
+
+        private fun checkNoImage(img: String): Boolean {
+            return !(img == "https://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available"
+                    || img == "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available")
+        }
+
+        private fun checkNoCaption(txt: String): Boolean {
+            return !(txt == "" || txt == null)
+        }
+
+        private fun fixLink(link: String?): String? {
+            return link?.let {
+                when {
+                    it.startsWith("https://") -> it
+                    it.startsWith("http://") -> it.replaceFirst("http://", "https://")
+                    else -> it // Not a valid URL, return as-is
+                }
+            }
         }
 
         private fun truncateCaption(caption: String): String {
@@ -46,6 +90,20 @@ class ImagesAdapter(
         }
 
     }
+
+    private fun toggleSelection(item: Result) {
+        if (selectedItems.contains(item)) {
+            selectedItems.remove(item)
+        } else {
+            selectedItems.add(item)
+        }
+        notifyItemChanged(imagesList.indexOf(item))
+    }
+
+    fun getSelectedItems(): List<Result> {
+        return ArrayList(selectedItems)
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = LayoutImagesBinding.inflate(

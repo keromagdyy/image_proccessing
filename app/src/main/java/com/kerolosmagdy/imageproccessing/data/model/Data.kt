@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.TypeConverters
 import com.kerolosmagdy.imageproccessing.data.db.room.ResultListConverter
 
-
+@TypeConverters(ResultListConverter::class)
 data class Data(
     val count: Int,
     val limit: Int,

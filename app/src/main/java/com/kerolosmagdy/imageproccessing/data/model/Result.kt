@@ -1,31 +1,19 @@
 package com.kerolosmagdy.imageproccessing.data.model
 
-import com.kerolosmagdy.imageproccessing.domain.model.Character
+import android.os.Parcel
+import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.TypeConverters
+import com.kerolosmagdy.imageproccessing.data.db.room.ThumbnailConverter
 import java.io.Serializable
 
+@TypeConverters(ThumbnailConverter::class)
 data class Result(
-//    val comics: Comics,
-    val description: String,
-//    val events: Events,
+    var description: String,
     val id: Int,
     val modified: String,
     val name: String,
-    val resourceURI: String,
-//    val series: Series,
-//    val stories: Stories,
-//    val thumbnail: Thumbnail,
-//    val urls: List<Url>
-): Serializable {
-//    fun toCharacter(): Character {
-//        return Character(
-//            id = id,
-//            name = name,
-//            description = description,
-//            thumbnail = thumbnail.path,
-//            thumbnailExt = thumbnail.extension,
-//            comics = comics.items.map {
-//                it.name
-//            }
-//        )
-//    }
-}
+    @ColumnInfo(name = "thumbnail")
+    @TypeConverters(ThumbnailConverter::class)
+    val thumbnail: Thumbnail,
+): Serializable

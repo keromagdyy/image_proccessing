@@ -13,7 +13,7 @@ class CharactersRemoteDataSourceImpl(
     override suspend fun getCharacters(
         offset: String
     ): Response<CharactersModel> {
-        Log.d(Common.KeroDebug, "getBrand: ${charactersAPI.getCharacters(offset = "0")}")
+        Log.d("kmdvkdkvnkv", "getCharacters: ${charactersAPI.getCharacters(offset = offset)}")
         return charactersAPI.getCharacters(offset = offset)
 
     }

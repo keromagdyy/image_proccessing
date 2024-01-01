@@ -1,8 +1,8 @@
 package com.kerolosmagdy.imageproccessing.data.db.room
 
 import androidx.room.TypeConverter
-import com.kerolosmagdy.imageproccessing.data.model.Data
 import com.google.gson.Gson
+import com.kerolosmagdy.imageproccessing.data.model.Data
 
 class Converter {
     val gson= Gson()

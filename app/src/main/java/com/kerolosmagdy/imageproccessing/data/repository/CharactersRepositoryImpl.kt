@@ -15,7 +15,7 @@ class CharactersRepositoryImpl(
 ) : CharactersRepository {
 
     override suspend fun getCharacters(offset: String): CharactersModel {
-         var charactersModel: CharactersModel? = CharactersModel()
+        var charactersModel: CharactersModel? = CharactersModel()
 
 
         try {
@@ -33,14 +33,18 @@ class CharactersRepositoryImpl(
             Log.d("MyTag", "getBrandFromAPI: $exception")
         }
 
-        if (charactersModel!=null){
+        if (charactersModel != null) {
             return charactersModel
-        } else
-            return CharactersModel()
+            Log.d("kmdvkdkvnkv", "not null: ${charactersModel}")
+        } else {
+            return getCharactersFromDB(offset)
+            Log.d("kmdvkdkvnkv", "null: ${charactersModel}")
+        }
 
     }
 
     override suspend fun getCharactersFromDB(offset: String): CharactersModel {
+        Log.d("kmdvkdkvnkv", "getCharactersFromDB: ${getCharactersFromCache(offset)}")
 
         return getCharactersFromCache(offset)
 

@@ -23,42 +23,41 @@ class CharactersViewModel(
     val getCharactersMutableLiveData: MutableLiveData<CharactersModel> = MutableLiveData()
     val getCurrentCharactersMutableLiveData: MutableLiveData<CharactersModel> = MutableLiveData()
 
-    fun getCharacters(offset:String) :LiveData<CharactersModel>{
+    fun getCharacters(offset: String): LiveData<CharactersModel> {
 
-    viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
 
-        val characters = getCharactersUseCase.execute(offset)
+            var characters = getCharactersFromDbUseCase.execute(offset)
 
+            Log.d(Common.KeroDebug, "getCharacters: 0 ${characters}")
 
-        if (characters != null){
-            getCharactersMutableLiveData.postValue(characters)
-        }else{
-            if (isNetworkAvailable(app)){
-                val characters = getCharactersUseCase.execute(offset)
-                getCharactersMutableLiveData.postValue(characters)
+            if (characters == null) {
+                saveCharactersUseCase.execute(offset)
+                characters = getCharactersUseCase.execute(offset)
+                Log.d(Common.KeroDebug, "getCharacters: 1 ${characters}")
+            } else {
+                if (isNetworkAvailable(app)) {
+                    saveCharactersUseCase.execute(offset)
+                    characters = getCharactersUseCase.execute(offset)
+                    Log.d(Common.KeroDebug, "getCharacters: 2 ${characters}")
+                } else {
+                    characters = getCharactersFromDbUseCase.execute(offset)
 
-            }else{
-                Log.d("ahmed viewModel", "getCharacters:no internet")
-
+                    Log.d(Common.KeroDebug, "getCharacters: 3 ${characters}")
+                }
             }
+            Log.d(Common.KeroDebug, "getCharacters: 4 ${characters}")
+            getCharactersMutableLiveData.postValue(characters)
         }
-    }
         return getCharactersMutableLiveData
     }
+
     fun getCurrentCharacters(Characters_ID: String) = viewModelScope.launch(Dispatchers.IO) {
         val characters = getCharactersFromDbUseCase.execute(Characters_ID)
 
         characters.let {
             getCurrentCharactersMutableLiveData.postValue(it)
         }
-    }
-
-    fun updateCharacters(Characters_ID:String)=  viewModelScope.launch(Dispatchers.IO) {
-        if (isNetworkAvailable(app)){
-//          val characters = saveCharactersUseCase.execute(Characters_ID)
-//          saveCharactersMutableLiveData.value = characters
-        }
-
     }
 
 }

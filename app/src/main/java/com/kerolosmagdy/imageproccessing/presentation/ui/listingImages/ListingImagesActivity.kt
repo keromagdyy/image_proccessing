@@ -3,10 +3,10 @@ package com.kerolosmagdy.imageproccessing.presentation.ui.listingImages
 import android.os.Bundle
 import android.content.Intent
 import android.util.Log
+import android.view.View
 import android.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import com.kerolosmagdy.imageproccessing.R
 import com.kerolosmagdy.imageproccessing.data.model.Result
 import com.kerolosmagdy.imageproccessing.data.util.Common
 import com.kerolosmagdy.imageproccessing.data.util.ConstantLinks
@@ -22,6 +22,7 @@ class ListingImagesActivity : BaseActivity() {
     private lateinit var binding: ActivityListingImagesBinding
     private lateinit var adapter: ImagesAdapter
     private var imageList: List<Result> = ArrayList()
+
     @Inject
     lateinit var charactersFactory: CharactersViewModelFactory
     private lateinit var charactersViewModel: CharactersViewModel
@@ -37,107 +38,27 @@ class ListingImagesActivity : BaseActivity() {
 
     private fun init() {
         search()
-        charactersViewModel = ViewModelProvider(this, charactersFactory)[CharactersViewModel::class.java]
-        getBrand(getOffsetByPage(0))
-
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.im_colors,
-//                "Logo colors "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.im_cat,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat"
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo cat cat "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
-//        (imageList as ArrayList).add(
-//            ImagesModel(
-//                R.drawable.ic_logo_jpg,
-//                "Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo Logo "
-//            )
-//        )
+        charactersViewModel =
+            ViewModelProvider(this, charactersFactory)[CharactersViewModel::class.java]
+        getCharacters("0")
 
     }
 
     private fun onClick() {
-
+        binding.swipeRefresh.setOnRefreshListener {
+            getCharacters("0")
+        }
     }
 
 
-    private fun getBrand(offset: String){
-
+    private fun getCharacters(offset: String) {
+        binding.progressLoading.visibility = View.VISIBLE
         charactersViewModel.getCharacters(offset).observe(this) {
-//            if (it.data!!.results.isNotEmpty()) {
-//                setupRecycler(it.data!!.results)
-//            }
+            if (it.code == 200) {
+                setupRecycler(it.data!!.results)
+            }
+            binding.swipeRefresh.isRefreshing = false
+            binding.progressLoading.visibility = View.GONE
         }
 
     }
@@ -149,7 +70,11 @@ class ListingImagesActivity : BaseActivity() {
                 val intent = Intent(baseContext, ImageDetailsActivity::class.java)
                 intent.putExtra("image", image)
                 startActivity(intent)
+            },
+            onLongClick = { image, position ->
+
             }
+
         )
         adapter.setData(list)
         binding.recycler.layoutManager = layoutManager
@@ -178,7 +103,7 @@ class ListingImagesActivity : BaseActivity() {
         })
     }
 
-    private fun getOffsetByPage(page: Int): String{
-        return (if(page == 1) 0 else (page-1) * (ConstantLinks.ITEMS_PER_PAGE)).toString()
+    private fun getOffsetByPage(page: Int): String {
+        return (if (page == 1) 0 else (page - 1) * (ConstantLinks.ITEMS_PER_PAGE)).toString()
     }
 }

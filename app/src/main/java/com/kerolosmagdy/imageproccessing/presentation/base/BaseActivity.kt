@@ -2,9 +2,15 @@ package com.kerolosmagdy.imageproccessing.presentation.base
 
 import android.content.Context
 import android.content.res.Configuration
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
+import android.os.Environment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.Target
+import java.io.File
+import java.io.FileOutputStream
+import java.util.*
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.Gravity
@@ -19,6 +25,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.request.Request
+import com.bumptech.glide.request.target.SizeReadyCallback
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.kerolosmagdy.imageproccessing.R
@@ -26,6 +35,7 @@ import com.kerolosmagdy.imageproccessing.data.db.pref.SharedPreferenceHelper
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.util.Locale
+import java.util.UUID
 import javax.net.SocketFactory
 
 
@@ -185,6 +195,68 @@ open class BaseActivity : AppCompatActivity() {
             true
         } catch (e: IOException) {
             false
+        }
+    }
+
+    fun saveImagesToInternalStorage(imageUrls: List<String>) {
+        val picturesDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+
+        for (imageUrl in imageUrls) {
+            val fileName = UUID.randomUUID().toString() + ".jpg" // Unique filename
+            val file = File(picturesDir, fileName)
+
+            Glide.with(baseContext)
+                .asBitmap()
+                .load(imageUrl)
+                .into(object : Target<Bitmap> {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        FileOutputStream(file).use { out ->
+                            resource.compress(Bitmap.CompressFormat.JPEG, 100, out)
+                        }
+                    }
+
+                    override fun onStart() {
+                    }
+
+                    override fun onStop() {
+                    }
+
+                    override fun onDestroy() {
+                    }
+
+                    override fun onLoadStarted(placeholder: Drawable?) {
+                    }
+
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
+                        // Handle image download failure
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        // Handle image download failure
+                    }
+
+                    override fun getSize(cb: SizeReadyCallback) {
+                    }
+
+                    override fun removeCallback(cb: SizeReadyCallback) {
+                    }
+
+                    override fun setRequest(request: Request?) {
+                    }
+
+                    override fun getRequest(): Request? {
+                        return request
+                    }
+                })
+        }
+    }
+
+    fun loadImageFromInternalStorage(filePath: String): Bitmap? {
+        val file = File(filePath)
+        return if (file.exists()) {
+            BitmapFactory.decodeFile(filePath)
+        } else {
+            null
         }
     }
 

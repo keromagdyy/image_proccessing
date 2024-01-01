@@ -7,10 +7,10 @@ import com.kerolosmagdy.imageproccessing.data.model.CharactersModel
 
 @Database(
     entities = [CharactersModel::class],
-    version = 1,
+    version = 4,
     exportSchema = false
 )
-@TypeConverters(Converter::class, ResultConverter::class, ResultListConverter::class)
+@TypeConverters(Converter::class, ResultConverter::class, ResultListConverter::class, ThumbnailConverter::class)
 abstract class Database : RoomDatabase() {
     abstract fun getCharactersDao(): CharactersDao
 }

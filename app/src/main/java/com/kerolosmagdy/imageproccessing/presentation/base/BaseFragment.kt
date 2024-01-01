@@ -75,7 +75,7 @@ open class BaseFragment : Fragment() {
             )
             snackbar.show()
         } catch (e:Exception) {
-            Log.d(Common.KeroDebug, "showToastSnack: ${e.message}")
+            Log.d("log", "showToastSnack: ${e.message}")
         }
     }
 

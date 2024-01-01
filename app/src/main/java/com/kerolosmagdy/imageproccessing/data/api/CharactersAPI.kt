@@ -8,11 +8,9 @@ import retrofit2.http.Query
 
 interface CharactersAPI {
 
-    @GET("v1/public/characters")
+    @GET("characters")
     suspend fun getCharacters(
-        @Query("apiKey") apiKey: String = ConstantLinks.API_KEY,
-        @Query("ts") ts: String = ConstantLinks.timestamp,
-        @Query("hash") hash: String = ConstantLinks.hash(),
+        @Query("limit") limit: Int = ConstantLinks.limit,
         @Query("offset") offset: String,
     ): Response<CharactersModel>
 
