@@ -1,6 +1,7 @@
 package com.kerolosmagdy.imageproccessing.presentation.ui.listingImages
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
@@ -45,9 +46,9 @@ class ImagesAdapter(
             }
 
             if (selectedItems.contains(item)) {
-                binding.root.setBackgroundResource(R.drawable.selected_item_background)
+                binding.layoutSelected.visibility = View.VISIBLE
             } else {
-                binding.root.setBackgroundResource(0) // Set your default background here
+                binding.layoutSelected.visibility = View.GONE
             }
 
 

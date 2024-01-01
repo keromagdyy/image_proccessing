@@ -9,7 +9,7 @@ object ConstantLinks {
     val timestamp = Timestamp(System.currentTimeMillis()).time.toString()
     const val API_KEY = "af335b4ad9e76071eaa5b602c54167d5"
     const val PRIVATE_KEY = "6900c339cabfd8a323a242950734ccb7c8b2bcea"
-    const val limit = 50
+    const val limit = 30
     const val ITEMS_PER_PAGE: Int = 10
     fun hash(): String {
         val input = "$timestamp$PRIVATE_KEY$API_KEY"
